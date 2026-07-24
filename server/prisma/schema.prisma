@@ -1,0 +1,266 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PUBLIC
+  VESSEL_OPERATOR
+  PORT_MANAGER
+  REGULATORY_OFFICIAL
+}
+
+enum VesselType {
+  CARGO_FERRY
+  PASSENGER_FERRY
+  TANKER
+  PATROL
+  TUG
+  OTHER
+}
+
+enum WarningSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum WarningStatus {
+  ACTIVE
+  CLEARED
+  ARCHIVED
+}
+
+enum BerthStatus {
+  AVAILABLE
+  OCCUPIED
+  MAINTENANCE
+}
+
+enum RiskLevel {
+  LOW
+  MODERATE
+  HIGH
+}
+
+enum IncidentSeverity {
+  MINOR
+  MODERATE
+  SERIOUS
+  CRITICAL
+}
+
+enum IncidentStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  RESOLVED
+}
+
+enum AlertSeverity {
+  INFO
+  WARNING
+  CRITICAL
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  fullName      String
+  email         String    @unique
+  passwordHash  String
+  role          Role      @default(PUBLIC)
+  status        String    @default("active")
+  createdAt     DateTime  @default(now())
+
+  vessels            Vessel[]
+  publishedWarnings  NavWarning[]
+  routeRequests      RouteAdvisory[]
+  incidentReports    IncidentReport[]
+  broadcastAlerts    EmergencyAlert[]
+  managedPorts       Port[]
+  auditLogs          AuditLog[]
+  publishedSchedules FerrySchedule[]
+  berthUpdates       BerthRecord[]
+  refreshTokens      RefreshToken[]
+}
+
+model Vessel {
+  id                 Int        @id @default(autoincrement())
+  vesselName         String
+  registrationNumber String?    @unique
+  vesselType         VesselType @default(OTHER)
+  maxDraught         Float?
+  latitude           Float      @default(7.8003)
+  longitude          Float      @default(6.7332)
+  speed              Float      @default(0)
+  heading            Int        @default(0)
+  lastUpdated        DateTime   @updatedAt
+  operator           User?      @relation(fields: [operatorId], references: [id])
+  operatorId         Int?
+
+  routeAdvisories RouteAdvisory[]
+  incidentReports IncidentReport[]
+
+  @@index([operatorId])
+  @@index([lastUpdated])
+}
+
+model Port {
+  id               Int      @id @default(autoincrement())
+  portName         String
+  locationName     String?
+  latitude         Float?
+  longitude        Float?
+  contactPhone     String?
+  contactEmail     String?
+  operationalHours String?
+  berthCount       Int      @default(1)
+  servicesOffered  String?
+  manager          User?    @relation(fields: [managerId], references: [id])
+  managerId        Int?
+
+  berths    BerthRecord[]
+  schedules FerrySchedule[]
+}
+
+model BerthRecord {
+  id          Int         @id @default(autoincrement())
+  berthName   String
+  status      BerthStatus @default(AVAILABLE)
+  updatedAt   DateTime    @updatedAt
+  port        Port        @relation(fields: [portId], references: [id])
+  portId      Int
+  updatedBy   User?       @relation(fields: [updatedById], references: [id])
+  updatedById Int?
+
+  @@index([portId])
+  @@index([status])
+}
+
+model FerrySchedule {
+  id          Int      @id @default(autoincrement())
+  destination String
+  departure   String
+  daysOfWeek  String
+  vesselName  String?
+  fare        Float?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  port        Port     @relation(fields: [portId], references: [id])
+  portId      Int
+  publisher   User?    @relation(fields: [publishedBy], references: [id])
+  publishedBy Int?
+}
+
+model NavWarning {
+  id                Int             @id @default(autoincrement())
+  title             String
+  description       String
+  severity          WarningSeverity @default(MEDIUM)
+  affectedZone      String?
+  zoneGeoJson       Json?
+  expectedClearance DateTime?
+  status            WarningStatus   @default(ACTIVE)
+  publishedAt       DateTime        @default(now())
+  publisher         User            @relation(fields: [publishedBy], references: [id])
+  publishedBy       Int
+
+  @@index([status])
+  @@index([publishedAt])
+}
+
+model WeatherAdvisory {
+  id            Int      @id @default(autoincrement())
+  location      String?
+  windSpeed     Float?
+  precipitation Float?
+  visibility    Float?
+  advisoryType  String   @default("info")
+  advisoryText  String?
+  generatedAt   DateTime @default(now())
+
+  @@index([generatedAt])
+}
+
+model RouteAdvisory {
+  id               Int       @id @default(autoincrement())
+  departure        String
+  destination      String
+  recommendedRoute String?
+  riskLevel        RiskLevel @default(LOW)
+  estTransitHours  Float?
+  advisoryText     String?
+  generatedAt      DateTime  @default(now())
+  vessel           Vessel?   @relation(fields: [vesselId], references: [id])
+  vesselId         Int?
+  requester        User      @relation(fields: [requestedBy], references: [id])
+  requestedBy      Int
+
+  @@index([requestedBy])
+  @@index([generatedAt])
+}
+
+model EmergencyAlert {
+  id        Int           @id @default(autoincrement())
+  title     String
+  message   String
+  severity  AlertSeverity @default(WARNING)
+  isActive  Boolean       @default(true)
+  issuedAt  DateTime      @default(now())
+  expiresAt DateTime?
+  issuer    User          @relation(fields: [issuedBy], references: [id])
+  issuedBy  Int
+
+  @@index([isActive])
+  @@index([issuedAt])
+}
+
+model IncidentReport {
+  id           Int              @id @default(autoincrement())
+  incidentType String?
+  description  String
+  latitude     Float?
+  longitude    Float?
+  severity     IncidentSeverity @default(MODERATE)
+  status       IncidentStatus   @default(SUBMITTED)
+  reportedAt   DateTime         @default(now())
+  vessel       Vessel?          @relation(fields: [vesselId], references: [id])
+  vesselId     Int?
+  reporter     User             @relation(fields: [reportedBy], references: [id])
+  reportedBy   Int
+
+  @@index([reportedBy])
+  @@index([status])
+  @@index([reportedAt])
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  action    String
+  details   String?
+  ipAddress String?
+  loggedAt  DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
+
+  @@index([userId])
+  @@index([loggedAt])
+  @@index([action])
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+
+  @@index([userId])
+  @@index([expiresAt])
+}

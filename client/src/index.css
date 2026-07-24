@@ -1,0 +1,263 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+
+  --color-navy-950: #061018;
+  --color-navy-900: #0b1f33;
+  --color-navy-800: #122a42;
+  --color-navy-700: #1a3654;
+
+  --color-teal-600: #0d9488;
+  --color-teal-500: #14b8a6;
+  --color-teal-400: #2dd4bf;
+
+  --color-sand-50: #f8fafc;
+  --color-sand-100: #f1f5f9;
+
+  --shadow-soft: 0 1px 2px rgb(11 31 51 / 0.04), 0 8px 24px rgb(11 31 51 / 0.06);
+  --shadow-card: 0 1px 2px rgb(11 31 51 / 0.05), 0 12px 40px rgb(11 31 51 / 0.08);
+  --shadow-elevated: 0 4px 6px rgb(11 31 51 / 0.04), 0 24px 48px rgb(11 31 51 / 0.12);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-sand-50 font-sans text-navy-900 antialiased;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgb(13 148 136 / 0.08), transparent),
+      radial-gradient(ellipse 60% 40% at 100% 0%, rgb(11 31 51 / 0.04), transparent);
+    min-height: 100vh;
+  }
+
+  .dark body,
+  html.dark body {
+    @apply bg-navy-950 text-slate-100;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgb(13 148 136 / 0.12), transparent),
+      radial-gradient(ellipse 60% 40% at 100% 0%, rgb(45 212 191 / 0.05), transparent);
+  }
+
+  ::selection {
+    @apply bg-teal-500/20 text-navy-900;
+  }
+
+  .dark ::selection {
+    @apply bg-teal-500/30 text-white;
+  }
+}
+
+@layer components {
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  .glass-nav {
+    @apply border-b border-white/10 bg-navy-900/85 backdrop-blur-xl;
+  }
+
+  .dark .glass-nav {
+    @apply border-slate-700/50 bg-navy-950/90;
+  }
+
+  .surface-card {
+    @apply rounded-2xl border border-slate-200/80 bg-white shadow-card;
+  }
+
+  .dark .surface-card {
+    @apply border-slate-700/60 bg-navy-900 shadow-none;
+  }
+
+  .surface-muted {
+    @apply rounded-xl bg-slate-50/80 ring-1 ring-slate-200/60;
+  }
+
+  .dark .surface-muted {
+    @apply bg-navy-800/60 ring-slate-700/60;
+  }
+
+  .input-field {
+    @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-navy-900 shadow-sm transition placeholder:text-slate-400 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20;
+  }
+
+  .dark .input-field {
+    @apply border-slate-600 bg-navy-800 text-slate-100 placeholder:text-slate-500 focus:border-teal-400 focus:ring-teal-400/20;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-navy-900 px-5 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-navy-800 focus:outline-none focus:ring-2 focus:ring-teal-500/30 disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .dark .btn-primary {
+    @apply bg-teal-600 hover:bg-teal-500;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-navy-900 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-teal-500/20 disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .dark .btn-secondary {
+    @apply border-slate-600 bg-navy-800 text-slate-100 hover:border-slate-500 hover:bg-navy-700;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-navy-900;
+  }
+
+  .dark .btn-ghost {
+    @apply text-slate-400 hover:bg-navy-800 hover:text-slate-100;
+  }
+
+  .nav-link {
+    @apply rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-white/10 hover:text-white;
+  }
+
+  .nav-link-active {
+    @apply bg-white/10 text-white;
+  }
+
+  .table-premium thead {
+    @apply bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-wider text-slate-500;
+  }
+
+  .dark .table-premium thead {
+    @apply bg-navy-800/80 text-slate-400;
+  }
+
+  .table-premium th {
+    @apply px-5 py-3.5;
+  }
+
+  .table-premium td {
+    @apply border-t border-slate-100 px-5 py-4 text-sm;
+  }
+
+  .dark .table-premium td {
+    @apply border-slate-700/50;
+  }
+
+  .table-premium tbody tr {
+    @apply transition hover:bg-slate-50/50;
+  }
+
+  .dark .table-premium tbody tr {
+    @apply hover:bg-navy-800/40;
+  }
+
+  /* Dark mode text overrides for common patterns */
+  .dark .text-navy-900 {
+    @apply text-slate-100;
+  }
+
+  .dark .text-slate-600 {
+    @apply text-slate-400;
+  }
+
+  .dark .text-slate-500 {
+    @apply text-slate-500;
+  }
+
+  .dark .border-slate-100 {
+    @apply border-slate-700/50;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.6s ease-out both;
+}
+
+.animate-fade-up-delay-1 { animation-delay: 0.1s; }
+.animate-fade-up-delay-2 { animation-delay: 0.2s; }
+.animate-fade-up-delay-3 { animation-delay: 0.3s; }
+
+/* Map */
+.map-container .leaflet-container {
+  @apply rounded-2xl ring-1 ring-slate-200/80;
+  font-family: inherit !important;
+}
+
+.dark .map-container .leaflet-container {
+  @apply ring-slate-700/60;
+}
+
+.map-container:fullscreen {
+  @apply bg-navy-950 p-0;
+}
+
+.map-container:fullscreen .leaflet-container {
+  height: 100vh !important;
+  @apply rounded-none ring-0;
+}
+
+.vessel-marker-wrapper {
+  background: transparent !important;
+  border: none !important;
+}
+
+.vessel-marker-pin {
+  filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.25));
+  transition: transform 0.2s ease;
+}
+
+.vessel-marker-wrapper:hover .vessel-marker-pin {
+  transform: scale(1.15);
+}
+
+.map-legend {
+  max-width: 160px;
+}
+
+.leaflet-popup-content-wrapper {
+  @apply rounded-xl shadow-elevated;
+}
+
+.dark .leaflet-popup-content-wrapper {
+  @apply bg-navy-800 text-slate-100;
+}
+
+.dark .leaflet-popup-tip {
+  @apply bg-navy-800;
+}
+
+/* Skeleton shimmer enhancement */
+.animate-pulse {
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgb(255 255 255 / 0.4) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+
+.dark .animate-pulse {
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgb(255 255 255 / 0.06) 50%,
+    transparent 100%
+  );
+}

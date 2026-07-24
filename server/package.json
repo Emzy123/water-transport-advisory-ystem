@@ -1,0 +1,40 @@
+{
+  "name": "water-transport-portal-server",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "seed": "node prisma/seed.js",
+    "test": "node --test tests/api.test.js tests/ws.test.js tests/geo.test.js",
+    "db:migrate": "npx prisma migrate dev",
+    "db:generate": "npx prisma generate"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "@turf/boolean-point-in-polygon": "^7.3.5",
+    "@turf/helpers": "^7.3.5",
+    "axios": "^1.18.1",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
+    "express-validator": "^7.3.2",
+    "helmet": "^8.2.0",
+    "jsonwebtoken": "^9.0.3",
+    "pino": "^10.3.1",
+    "pino-http": "^11.0.0",
+    "prisma": "^5.22.0",
+    "uuid": "^14.0.1",
+    "ws": "^8.21.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14",
+    "supertest": "^7.2.2"
+  }
+}

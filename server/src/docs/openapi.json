@@ -1,0 +1,59 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Water Transport Advisory Portal API",
+    "version": "1.0.0",
+    "description": "Enterprise REST API for Nigerian inland waterway transport — vessel tracking, weather, warnings, ports, schedules, route advisories, emergency alerts, incidents, and audit."
+  },
+  "servers": [{ "url": "/api/v1", "description": "Version 1" }],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT" }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string" },
+          "code": { "type": "string" },
+          "requestId": { "type": "string" }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/health": { "get": { "summary": "Health check", "tags": ["System"] } },
+    "/auth/register": { "post": { "summary": "Register (FR-01)", "tags": ["Auth"] } },
+    "/auth/login": { "post": { "summary": "Login (FR-01)", "tags": ["Auth"] } },
+    "/auth/refresh": { "post": { "summary": "Refresh access token", "tags": ["Auth"] } },
+    "/auth/logout": { "post": { "summary": "Logout / revoke refresh token", "tags": ["Auth"], "security": [{ "bearerAuth": [] }] } },
+    "/auth/me": { "get": { "summary": "Current user profile", "tags": ["Auth"], "security": [{ "bearerAuth": [] }] } },
+    "/vessels": { "get": { "summary": "List vessels (FR-02)", "tags": ["Vessels"] } },
+    "/vessels/{id}": { "get": { "summary": "Get vessel", "tags": ["Vessels"] } },
+    "/vessels/{id}/position": { "put": { "summary": "Update vessel position", "tags": ["Vessels"], "security": [{ "bearerAuth": [] }] } },
+    "/weather": { "get": { "summary": "Current weather advisory (FR-03)", "tags": ["Weather"] } },
+    "/weather/history": { "get": { "summary": "Weather history", "tags": ["Weather"], "security": [{ "bearerAuth": [] }] } },
+    "/warnings": { "get": { "summary": "List nav warnings (FR-04)", "tags": ["Warnings"] }, "post": { "summary": "Create warning (FR-04)", "tags": ["Warnings"], "security": [{ "bearerAuth": [] }] } },
+    "/ports": { "get": { "summary": "Port directory (FR-05)", "tags": ["Ports"] } },
+    "/ports/{id}/berths/{berthId}": { "put": { "summary": "Update berth status (FR-06)", "tags": ["Ports"], "security": [{ "bearerAuth": [] }] } },
+    "/schedules": { "get": { "summary": "Ferry schedules (FR-07)", "tags": ["Schedules"] }, "post": { "summary": "Publish schedule", "tags": ["Schedules"], "security": [{ "bearerAuth": [] }] } },
+    "/routes": { "post": { "summary": "Route advisory (FR-08)", "tags": ["Advisory"], "security": [{ "bearerAuth": [] }] } },
+    "/alerts/active": { "get": { "summary": "Active emergency alerts", "tags": ["Alerts"] } },
+    "/alerts": { "post": { "summary": "Broadcast alert (FR-09)", "tags": ["Alerts"], "security": [{ "bearerAuth": [] }] } },
+    "/incidents": { "get": { "summary": "List incidents", "tags": ["Incidents"], "security": [{ "bearerAuth": [] }] }, "post": { "summary": "Report incident (FR-10)", "tags": ["Incidents"], "security": [{ "bearerAuth": [] }] } },
+    "/audit": { "get": { "summary": "Audit log (FR-11)", "tags": ["Audit"], "security": [{ "bearerAuth": [] }] } }
+  },
+  "tags": [
+    { "name": "System" },
+    { "name": "Auth" },
+    { "name": "Vessels" },
+    { "name": "Weather" },
+    { "name": "Warnings" },
+    { "name": "Ports" },
+    { "name": "Schedules" },
+    { "name": "Advisory" },
+    { "name": "Alerts" },
+    { "name": "Incidents" },
+    { "name": "Audit" }
+  ]
+}
